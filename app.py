@@ -6,20 +6,20 @@ import time
 from datetime import datetime
 
 # Load the trained model
-model_filename = "logistic_regression_pipeline.pkl"
+model_filename = "best_model_pipeline.pkl"
 loaded_pipe = joblib.load(model_filename)
 
-# Define numerical and categorical features used during training
-numerical_features = [
-    "lead_time", "adr", "previous_cancellations", "previous_bookings_not_canceled",
-    "booking_changes", "days_in_waiting_list", "adults", "required_car_parking_spaces",
-    "total_of_special_requests"
-]
+# # Define numerical and categorical features used during training
+# numerical_features = [
+#     "lead_time", "adr", "previous_cancellations", "previous_bookings_not_canceled",
+#     "booking_changes", "days_in_waiting_list", "adults", "required_car_parking_spaces",
+#     "total_of_special_requests"
+# ]
 
-categorical_features = [
-    "hotel", "customer_type", "market_segment", "distribution_channel",
-    "deposit_type", "meal", "reserved_room_type", "assigned_room_type", "is_repeated_guest"
-]
+# categorical_features = [
+#     "hotel", "customer_type", "market_segment", "distribution_channel",
+#     "deposit_type", "meal", "reserved_room_type", "assigned_room_type", "is_repeated_guest"
+# ]
 
 # Streamlit UI
 st.title("📊 Hotel Booking Cancellation Predictor")
@@ -132,8 +132,9 @@ while True:
         - **👤 Customer Type:** {new_row["Customer Type"]}  
         - **📢 Market Segment:** {new_row["Market Segment"]}  
         - **📡 Distribution Channel:** {new_row["Distribution Channel"]}  
-        - **🛏️ Reserved Room Type:** {new_row["Reserved Room Type"]}  
-        - **⚠️ **Cancellation Probability: `{new_row["Cancellation Probability"] * 100:.2f}%`**  
+        - **🛏️ Reserved Room Type:** {new_row["Reserved Room Type"]}
+
+        > **⚠️ Cancellation Probability:** `{new_row["Cancellation Probability"] * 100:.2f}%`  
         """, icon="📢")
 
     # ✅ Show updated recent predictions table if toggle is active
