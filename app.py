@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 from faker import Faker
 
-st.set_page_config(page_title="Booking Cancellation Predictor", layout="wide", page_icon="🛎️")
+st.set_page_config(page_title="Booking Cancellation Predictor", page_icon="🛎️")
 
 # Load the trained model
 model_filename = "best_model_pipeline.pkl"
