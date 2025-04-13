@@ -1,15 +1,15 @@
-# Future Developments for the Project
+### Future Developments for the Project
 
-1. Improve the **model** and trying to implement a gridsearch technique to find a model that predicts better than the logicitic regression currently deployed.
+- [x] Improve the **model** by implementing a full **GridSearch** to find a better-performing alternative to the currently deployed logistic regression.
 
-2. **Feature Selection Refinement**: Remove **ADR** and **Booking Changes** being generated in the prototype as they are **not available at the time of booking**.
+- [ ] Refine **feature selection** by removing **ADR** and **Booking Changes** from the prototype inputs, as these values are **not known at the time of booking**.
 
-3. **Review and Fix Column Handling**: Check why **Company** and **Agent** columns are **not included** in `app.py`’s processing lists and ensure they are **properly handled**.  
+- [ ] **Review and fix column handling** in `app.py` to ensure that **Company** and **Agent** are included and processed consistently.
 
-4. **Improving New Booking Data Generation**: Enhance the **randomized booking simulation** to generate **more realistic data**, maybe leveraging the distribution of each feature in the original dataset. 
+- [ ] Improve the **generation of simulated bookings** by making the random values **more realistic**, ideally based on the **feature distributions** in the original dataset.
 
-5. **Enhancing Booking Data**: Include **guest details** that are typically received with a booking but not used for model prediction: **Name, Email, Phone Number, Gender**, etc.  
+- [ ] Include **additional guest details** (e.g. **Name, Email, Phone Number, Gender**) in the UI to reflect what a hotel system would actually receive, even if they're not used in model prediction.
 
-6. **UI/UX Enhancements for the Streamlit App**  
-   - Improve the **interface design** for a **cleaner and more intuitive layout**.  
-   - Ensure that **multiple spinners do not appear** when toggling elements like the recent predictions table.
+- [ ] Enhance the **Streamlit UI/UX**:
+  - [ ] Design a **cleaner, more structured layout** for better readability and usability.
+  - [ ] Fix toggle behavior to **prevent duplicate or overlapping spinners** when switching visibility of recent predictions.
