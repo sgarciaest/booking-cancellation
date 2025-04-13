@@ -4,48 +4,53 @@ import numpy as np
 import joblib
 import time
 from datetime import datetime
+from faker import Faker
 
 # Load the trained model
 model_filename = "best_model_pipeline.pkl"
 loaded_pipe = joblib.load(model_filename)
 
-# # Define numerical and categorical features used during training
-# numerical_features = [
-#     "lead_time", "adr", "previous_cancellations", "previous_bookings_not_canceled",
-#     "booking_changes", "days_in_waiting_list", "adults", "required_car_parking_spaces",
-#     "total_of_special_requests"
-# ]
-
-# categorical_features = [
-#     "hotel", "customer_type", "market_segment", "distribution_channel",
-#     "deposit_type", "meal", "reserved_room_type", "assigned_room_type", "is_repeated_guest"
-# ]
+# Faker instance
+faker = Faker()
 
 # Streamlit UI
 st.title("📊 Hotel Booking Cancellation Predictor")
-
 st.image("_assets/banner.jpg")
-
 st.write("🔄 This app simulates real-time incoming bookings and predicts the cancellation probability.")
 st.write("📌 When a new booking comes into the system, a prediction is made and shown. The most recent predictions are displayed.")
 
-# ✅ Toggle to display/hide the recent predictions table
+# Toggle to display/hide the recent predictions table
 show_recent_predictions = st.toggle("Show Recent Predictions", value=True)
 
-# ✅ Initialize session state for storing recent predictions
+# Initialize session state
 if "recent_predictions" not in st.session_state:
     st.session_state.recent_predictions = pd.DataFrame(columns=[
-        "Booking Date", "Hotel Type", "Customer Type", "Market Segment",
-        "Distribution Channel", "Reserved Room Type", "Deposit Type",
-        "Repeated Guest", "Company", "Agent", "Adults", "Previous Cancellations",
-        "Cancellation Probability"
+        "Booking Date", "Guest Name", "Gender", "Email", "Phone",
+        "Hotel Type", "Customer Type", "Market Segment", "Distribution Channel",
+        "Reserved Room Type", "Deposit Type", "Repeated Guest", "Company", "Agent",
+        "Adults", "Previous Cancellations", "Cancellation Probability"
     ])
 
-# ✅ Create placeholders for the real-time clock and latest booking info
+# Placeholders
 clock_placeholder = st.empty()
 new_booking_placeholder = st.empty()
+recent_predictions_placeholder = st.empty()
 
-# ✅ Function to generate random booking data
+# Clock updater
+def update_clock():
+    while True:
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        clock_placeholder.markdown(
+            f"<h2 style='text-align: center; font-family: monospace;'>{current_time}</h2>",
+            unsafe_allow_html=True
+        )
+        time.sleep(1)
+
+import threading
+clock_thread = threading.Thread(target=update_clock, daemon=True)
+clock_thread.start()
+
+# Random booking data generator
 def generate_random_booking():
     return pd.DataFrame({
         "lead_time": [np.random.randint(0, 365)],
@@ -68,38 +73,27 @@ def generate_random_booking():
         "agent": [float(np.random.randint(0, 500)) if np.random.rand() > 0.2 else float(0)]
     })
 
-# ✅ Function to update real-time clock
-def update_clock():
-    while True:
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        clock_placeholder.markdown(
-            f"<h2 style='text-align: center; font-family: monospace;'>{current_time}</h2>",
-            unsafe_allow_html=True
-        )
-        time.sleep(1)
-
-# ✅ Run real-time clock in a separate thread
-import threading
-clock_thread = threading.Thread(target=update_clock, daemon=True)
-clock_thread.start()
-
-# ✅ Create an empty placeholder for displaying predictions
-recent_predictions_placeholder = st.empty()
-
-# ✅ Simulate real-time updates
+# Main loop
 while True:
-    # ✅ Generate a new booking
     new_booking = generate_random_booking()
 
-    # ✅ Predict cancellation probability
-    pred_proba = loaded_pipe.predict_proba(new_booking)[:, 1][0]  # Probability of cancellation
+    # Fake guest details
+    guest_name = faker.name()
+    guest_email = faker.email()
+    guest_phone = faker.phone_number()
+    guest_gender = np.random.choice(["Male", "Female", "Other"])
 
-    # ✅ Get current date & time
+    # Predict
+    pred_proba = loaded_pipe.predict_proba(new_booking)[:, 1][0]
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # ✅ Create a new row for the table
+    # New row for recent predictions
     new_row = {
         "Booking Date": timestamp,
+        "Guest Name": guest_name,
+        "Gender": guest_gender,
+        "Email": guest_email,
+        "Phone": guest_phone,
         "Hotel Type": new_booking["hotel"].values[0],
         "Customer Type": new_booking["customer_type"].values[0],
         "Market Segment": new_booking["market_segment"].values[0],
@@ -114,31 +108,32 @@ while True:
         "Cancellation Probability": round(pred_proba, 4)
     }
 
-    # ✅ Update session state with the new prediction
+    # Update state
     st.session_state.recent_predictions = pd.concat(
-        [st.session_state.recent_predictions, pd.DataFrame([new_row])], ignore_index=True
-    ).tail(10)  # Keep only the last 10 predictions
+        [st.session_state.recent_predictions, pd.DataFrame([new_row])],
+        ignore_index=True
+    ).tail(10)
 
-    # ✅ Show new booking info (BELOW the real-time clock)
+    # Display new booking
     with new_booking_placeholder:
         st.info(f"""
         **🆕 New Booking Came In!**  
         - **📅 Date:** {new_row["Booking Date"]}  
+        - **👤 Name:** {new_row["Guest Name"]}  
+        - **📩 Email:** {new_row["Email"]}  
+        - **📱 Phone:** {new_row["Phone"]}  
+        - **⚧ Gender:** {new_row["Gender"]}  
         - **🏨 Hotel Type:** {new_row["Hotel Type"]}  
-        - **👤 Customer Type:** {new_row["Customer Type"]}  
         - **📢 Market Segment:** {new_row["Market Segment"]}  
         - **📡 Distribution Channel:** {new_row["Distribution Channel"]}  
-        - **🛏️ Reserved Room Type:** {new_row["Reserved Room Type"]}
-
-        > **⚠️ Cancellation Probability:** `{new_row["Cancellation Probability"] * 100:.2f}%`  
+        - **🛏️ Reserved Room Type:** {new_row["Reserved Room Type"]}  
+        > **⚠️ Cancellation Probability:** `{new_row["Cancellation Probability"] * 100:.2f}%`
         """, icon="📢")
 
-    # ✅ Show updated recent predictions table if toggle is active
     if show_recent_predictions:
         with recent_predictions_placeholder:
             st.subheader("📈 Recent Predictions")
             st.dataframe(st.session_state.recent_predictions)
 
-    # ✅ Show waiting spinner for new bookings
     with st.spinner("⏳ Waiting for new bookings..."):
         time.sleep(np.random.randint(5, 11))
