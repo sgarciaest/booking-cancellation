@@ -37,7 +37,7 @@ if "recent_predictions" not in st.session_state:
     st.session_state.recent_predictions = pd.DataFrame(columns=[
         "Booking Date", "Hotel Type", "Customer Type", "Market Segment",
         "Distribution Channel", "Reserved Room Type", "Deposit Type",
-        "Repeated Guest", "Company", "Agent", "Adults", "ADR", "Previous Cancellations",
+        "Repeated Guest", "Company", "Agent", "Adults", "Previous Cancellations",
         "Cancellation Probability"
     ])
 
@@ -49,10 +49,8 @@ new_booking_placeholder = st.empty()
 def generate_random_booking():
     return pd.DataFrame({
         "lead_time": [np.random.randint(0, 365)],
-        "adr": [np.random.uniform(50, 200)],
         "previous_cancellations": [np.random.randint(0, 5)],
         "previous_bookings_not_canceled": [np.random.randint(0, 10)],
-        "booking_changes": [np.random.randint(0, 5)],
         "days_in_waiting_list": [np.random.randint(0, 30)],
         "adults": [np.random.randint(1, 3)],
         "required_car_parking_spaces": [np.random.randint(0, 2)],
@@ -92,7 +90,6 @@ recent_predictions_placeholder = st.empty()
 while True:
     # ✅ Generate a new booking
     new_booking = generate_random_booking()
-    new_booking["adr"] = new_booking["adr"].astype(int)
 
     # ✅ Predict cancellation probability
     pred_proba = loaded_pipe.predict_proba(new_booking)[:, 1][0]  # Probability of cancellation
@@ -113,7 +110,6 @@ while True:
         "Company": int(new_booking["company"].values[0]),
         "Agent": int(new_booking["agent"].values[0]),
         "Adults": new_booking["adults"].values[0],
-        "ADR": new_booking["adr"].values[0],
         "Previous Cancellations": new_booking["previous_cancellations"].values[0],
         "Cancellation Probability": round(pred_proba, 4)
     }
