@@ -24,8 +24,10 @@ categorical_features = [
 # Streamlit UI
 st.title("📊 Hotel Booking Cancellation Predictor")
 
+st.image("_assets/banner.jpg")
+
 st.write("🔄 This app simulates real-time incoming bookings and predicts the cancellation probability.")
-st.write("📌 When a new booking comes into the system, a prediction is made and the most recent predictions are displayed.")
+st.write("📌 When a new booking comes into the system, a prediction is made and shown. The most recent predictions are displayed.")
 
 # ✅ Toggle to display/hide the recent predictions table
 show_recent_predictions = st.toggle("Show Recent Predictions", value=True)
@@ -39,7 +41,8 @@ if "recent_predictions" not in st.session_state:
         "Cancellation Probability"
     ])
 
-# ✅ Placeholder for latest booking info
+# ✅ Create placeholders for the real-time clock and latest booking info
+clock_placeholder = st.empty()
 new_booking_placeholder = st.empty()
 
 # ✅ Function to generate random booking data
@@ -66,6 +69,21 @@ def generate_random_booking():
         "company": [float(np.random.randint(0, 500)) if np.random.rand() > 0.2 else float(0)],
         "agent": [float(np.random.randint(0, 500)) if np.random.rand() > 0.2 else float(0)]
     })
+
+# ✅ Function to update real-time clock
+def update_clock():
+    while True:
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        clock_placeholder.markdown(
+            f"<h2 style='text-align: center; font-family: monospace;'>{current_time}</h2>",
+            unsafe_allow_html=True
+        )
+        time.sleep(1)
+
+# ✅ Run real-time clock in a separate thread
+import threading
+clock_thread = threading.Thread(target=update_clock, daemon=True)
+clock_thread.start()
 
 # ✅ Create an empty placeholder for displaying predictions
 recent_predictions_placeholder = st.empty()
@@ -105,13 +123,7 @@ while True:
         [st.session_state.recent_predictions, pd.DataFrame([new_row])], ignore_index=True
     ).tail(10)  # Keep only the last 10 predictions
 
-    # ✅ Display current time in a digital clock style
-    st.markdown(
-        f"<h2 style='text-align: center; font-family: monospace;'>{timestamp}</h2>",
-        unsafe_allow_html=True
-    )
-
-    # ✅ Show new booking info
+    # ✅ Show new booking info (BELOW the real-time clock)
     with new_booking_placeholder:
         st.info(f"""
         **🆕 New Booking Came In!**  
@@ -121,12 +133,6 @@ while True:
         - **📢 Market Segment:** {new_row["Market Segment"]}  
         - **📡 Distribution Channel:** {new_row["Distribution Channel"]}  
         - **🛏️ Reserved Room Type:** {new_row["Reserved Room Type"]}  
-        - **💰 Deposit Type:** {new_row["Deposit Type"]}  
-        - **🔁 Repeated Guest:** {new_row["Repeated Guest"]}  
-        - **🏢 Company ID:** {new_row["Company"]}  
-        - **📞 Agent ID:** {new_row["Agent"]}  
-        - **👥 Adults:** {new_row["Adults"]}  
-        - **🔄 Previous Cancellations:** {new_row["Previous Cancellations"]}  
         - **⚠️ **Cancellation Probability: `{new_row["Cancellation Probability"] * 100:.2f}%`**  
         """, icon="📢")
 
