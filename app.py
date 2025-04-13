@@ -6,6 +6,8 @@ import time
 from datetime import datetime
 from faker import Faker
 
+st.set_page_config(page_title="Booking Cancellation Predictor", layout="wide", page_icon="🛎️")
+
 # Load the trained model
 model_filename = "best_model_pipeline.pkl"
 loaded_pipe = joblib.load(model_filename)
@@ -14,7 +16,7 @@ loaded_pipe = joblib.load(model_filename)
 faker = Faker()
 
 # Streamlit UI
-st.title("📊 Hotel Booking Cancellation Predictor")
+st.title("🏨🛎️ Hotel Booking Cancellation Predictor")
 st.image("_assets/banner.jpg")
 st.write("🔄 This app simulates real-time incoming bookings and predicts the cancellation probability.")
 st.write("📌 When a new booking comes into the system, a prediction is made and shown. The most recent predictions are displayed.")
