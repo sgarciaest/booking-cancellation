@@ -4,7 +4,7 @@ This interactive prototype simulates real-time hotel bookings and predicts the l
 
 The project includes both a complete **model training notebook** and a **Streamlit application** that visualizes and simulates live booking flows. It’s designed to reflect how front-desk staff or revenue managers could anticipate cancellations in real time.
 
-
+> This prototype was developed as an exploration of rapid prototyping using Streamlit in combination with a machine learning model. The objective was to build a business-oriented tool that demonstrates how predictive analytics can provide meaningful value.
 
 ## 🚀 Features
 
